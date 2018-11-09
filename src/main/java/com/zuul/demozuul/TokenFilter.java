@@ -1,0 +1,43 @@
+package com.zuul.demozuul;
+
+
+
+import com.netflix.zuul.context.RequestContext;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sun.misc.Request;
+
+import javax.servlet.http.HttpServletRequest;
+
+public class TokenFilter extends MyFilter {
+    //private final Logger logger= LoggerFactory.getLogger(TokenFilter.class);
+    private  final Logger logger= LoggerFactory.getLogger(TokenFilter.class);
+    @Override
+    public String filterType(){
+        return "pre";
+    }
+    @Override
+    public int filterOrder(){
+        return 0;
+    }
+    @Override
+    public Object run(){
+        RequestContext ctx=RequestContext.getCurrentContext();
+        HttpServletRequest request=ctx.getRequest();
+        logger.info("--->TokenFilter {},{}",request.getMethod(),request.getRequestURL().toString());
+        String token=request.getParameter("token");
+        if(StringUtils.isNotBlank(token)){
+            ctx.setSendZuulResponse(true);
+            ctx.setResponseStatusCode(200);
+            ctx.set("isSuccess",true);
+            return null;
+        }else{
+            ctx.setSendZuulResponse(false);
+            ctx.setResponseStatusCode(400);
+            ctx.setResponseBody("token is empty");
+            ctx.set("isSuccess",false);
+            return null;
+        }
+    }
+}

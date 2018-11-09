@@ -1,0 +1,4 @@
+zuul:
+  FormBodyWrapperFilter:
+    pre:
+      disable: true
